@@ -1,4 +1,5 @@
 targetScope = 'resourceGroup' // We'll deploy the resources in the provided resource group
+param swaLocation string
 
 // Parameters to easily construct resource names
 param location string
@@ -28,5 +29,15 @@ module appService 'modules/appService.bicep' = {
   }
 }
 
-// Export App Service Name
-output appServiceName string = appService.outputs.appServiceName
+module staticWebApp 'modules/staticWebApp.bicep' = {
+  name: 'staticWebApp'
+  params: {
+    location: swaLocation
+    project: project
+    identifier: identifier
+  }
+}
+
+output appServiceName string = appService.outputs.appServiceName // Export AppServiceName in order to deploy the API later on
+output staticWebAppName string = staticWebApp.outputs.swaName // Export StaticWebAppName in order to deploy the Frontend late
+
